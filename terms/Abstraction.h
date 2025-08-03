@@ -6,7 +6,7 @@
 #define ABSTRACTION_H
 
 #include "Variable.h"
-#include "Terms.h"
+#include "../Terms.h"
 
 #include <string>
 #include <memory>
@@ -25,5 +25,6 @@ public:
     [[nodiscard]] std::unique_ptr<Term> beta_reduce() const override;;
     [[nodiscard]] bool is_normal() const override;
     [[nodiscard]] bool has_free(std::string target) const override;
+    [[nodiscard]] virtual std::string to_string() const override;
 };
 #endif //ABSTRACTION_H

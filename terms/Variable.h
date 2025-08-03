@@ -5,7 +5,7 @@
 #ifndef VARIABLE_H
 #define VARIABLE_H
 
-#include "Terms.h"
+#include "../Terms.h"
 
 
 class Variable final : public Term {
@@ -21,6 +21,7 @@ public:
     [[nodiscard]] std::unique_ptr<Term> clone() const override;
     [[nodiscard]] bool is_normal() const override;
     [[nodiscard]] bool has_free(std::string target) const override;
+    [[nodiscard]] virtual std::string to_string() const override;
 };
 
 #endif //VARIABLE_H
