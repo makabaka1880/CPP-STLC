@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include "../terms/Application.h"
-#include "../terms/Variable.h"
-#include "../terms/Abstraction.h"
+#include "../models/terms/Application.h"
+#include "../models/terms/Variable.h"
+#include "../models/terms/Abstraction.h"
 #include "../exceptions/Exceptions.h"
 
 class ApplicationTest : public ::testing::Test {

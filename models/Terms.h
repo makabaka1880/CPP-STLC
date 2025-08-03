@@ -7,6 +7,7 @@
 
 #include <string>
 #include <memory>
+#include <iostream>
 
 class Term {
 public:
@@ -17,7 +18,9 @@ public:
     [[nodiscard]] virtual std::unique_ptr<Term> clone() const = 0;
     [[nodiscard]] virtual bool is_normal() const = 0;
     [[nodiscard]] virtual bool has_free(std::string target) const = 0;
+    [[nodiscard]] virtual std::string to_string() const = 0;
 };
 
 std::ostream& operator<<(std::ostream& os, const Term& term);
+std::istream& operator>>(std::istream& is, std::unique_ptr<Term>& term);
 #endif //TERM_H

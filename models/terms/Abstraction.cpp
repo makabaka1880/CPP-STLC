@@ -4,9 +4,9 @@
 
 #include "Abstraction.h"
 
-#include "Terms.h"
-#include "../utils.h"
-#include "../exceptions/Exceptions.h"
+#include "../Terms.h"
+#include "../../utils.h"
+#include "../../exceptions/Exceptions.h"
 
 using std::unique_ptr; using std::make_unique;
 
@@ -59,4 +59,8 @@ bool Abstraction::is_normal() const {
 bool Abstraction::has_free(std::string target) const {
     if (this->variable->name == target) return false;
     return this->body->has_free(target);
+}
+
+std::string Abstraction::to_string() const {
+    return "λ" + this->variable->name + ". " + this->body->to_string();
 }
