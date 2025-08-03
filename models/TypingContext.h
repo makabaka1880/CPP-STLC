@@ -12,7 +12,8 @@ class TypingContext {
 private:
 	std::map<std::string, const Type*> context;
 public:
-	[[nodiscard]] std::unique_ptr<Type> get(std::string target) const;
+	TypingContext();
+	~TypingContext();
 	[[nodiscard]] const Type* lookup(const std::string& name) const;
 };
 

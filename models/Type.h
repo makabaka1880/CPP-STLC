@@ -8,11 +8,15 @@
 #include <memory>
 #include <string>
 
+#include "terms/Variable.h"
+
 
 class Type {
 public:
 	virtual ~Type() = 0;
 	[[nodiscard]] virtual std::string to_string() const = 0;
+	[[nodiscard]] virtual std::unique_ptr<Type> clone() const = 0;
+	// [[nodiscard]] virtual std::unique_ptr<Type> downcast() const = 0;
 };
 
 class BaseType : public Type {
@@ -23,7 +27,8 @@ public:
 		name(std::move(name))
 	{};
 
-	[[nodiscard]] virtual std::string to_string() const override;
+	[[nodiscard]] std::string to_string() const override;
+	[[nodiscard]] std::unique_ptr<Type> clone() const override;
 };
 
 class FunctionType : public Type {
@@ -36,7 +41,8 @@ public:
 		codomain(std::move(codomain))
 	{}
 
-	[[nodiscard]] virtual std::string to_string() const override;
+	[[nodiscard]] std::string to_string() const override;
+	[[nodiscard]] std::unique_ptr<Type> clone() const override;
 };
 
 #endif //TYPE_H

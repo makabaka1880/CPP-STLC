@@ -52,6 +52,10 @@ unique_ptr<Term> Abstraction::beta_reduce() const {
     );
 }
 
+Type& Abstraction::type() const {
+    return self.
+}
+
 bool Abstraction::is_normal() const {
     return this->body->is_normal();
 }

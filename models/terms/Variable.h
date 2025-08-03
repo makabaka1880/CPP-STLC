@@ -22,8 +22,8 @@ public:
     [[nodiscard]] std::unique_ptr<Term> alpha_convert(std::string newValue) const override;;
     [[nodiscard]] std::unique_ptr<Term> beta_reduce() const override;
     [[nodiscard]] std::unique_ptr<Term> clone() const override;
+    [[nodiscard]] std::unique_ptr<Type> type_check(const TypingContext& context) const override;
     [[nodiscard]] std::string to_string() const override;
-    [[nodiscard]] Type& type() const override;
     [[nodiscard]] bool is_normal() const override;
     [[nodiscard]] bool has_free(std::string target) const override;
 };
