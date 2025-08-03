@@ -5,5 +5,10 @@
 #include "Exceptions.h"
 
 const char* ReductionOnNormalForm::what() const noexcept {
-	return "Beta reduction on normal form";
+	return fullMessage.c_str();
+}
+
+
+const char* UndeclaredVariableError::what() const noexcept {
+	return fullMessage.c_str();
 }
