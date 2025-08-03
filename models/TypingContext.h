@@ -5,9 +5,9 @@
 #ifndef TYPINGCONTEXT_H
 #define TYPINGCONTEXT_H
 #include <map>
-#include "Type.h"
+#include <string>
 
-
+class Type;
 class TypingContext {
 private:
 	std::map<std::string, const Type*> context;

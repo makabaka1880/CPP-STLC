@@ -24,6 +24,7 @@ TEST_F(VariableTest, Clone) {
     ASSERT_NE(cloned_var, nullptr);
     EXPECT_EQ(cloned_var->name, "x");
     EXPECT_NE(cloned_var, var_x.get());
+    EXPECT_EQ(cloned_var->get_type().to_string(), "τ");
 }
 
 TEST_F(VariableTest, IsNormal) {
@@ -47,6 +48,7 @@ TEST_F(VariableTest, SubstituteSameVariable) {
     Variable* result_var = dynamic_cast<Variable*>(result.get());
     ASSERT_NE(result_var, nullptr);
     EXPECT_EQ(result_var->name, "z");
+    EXPECT_EQ(result_var->get_type().to_string(), "τ");
 }
 
 TEST_F(VariableTest, SubstituteDifferentVariable) {
@@ -55,6 +57,7 @@ TEST_F(VariableTest, SubstituteDifferentVariable) {
     Variable* result_var = dynamic_cast<Variable*>(result.get());
     ASSERT_NE(result_var, nullptr);
     EXPECT_EQ(result_var->name, "x");
+    EXPECT_EQ(result_var->get_type().to_string(), "τ");
 }
 
 TEST_F(VariableTest, AlphaConvert) {
@@ -62,8 +65,78 @@ TEST_F(VariableTest, AlphaConvert) {
     Variable* result_var = dynamic_cast<Variable*>(result.get());
     ASSERT_NE(result_var, nullptr);
     EXPECT_EQ(result_var->name, "newname");
+    EXPECT_EQ(result_var->get_type().to_string(), "τ");
 }
 
 TEST_F(VariableTest, BetaReduceThrowsException) {
     EXPECT_THROW(var_x->beta_reduce(), ReductionOnNormalForm);
+}
+
+TEST_F(VariableTest, DefaultTypeIsTau) {
+    Variable var("test");
+    EXPECT_EQ(var.get_type().to_string(), "τ");
+}
+
+TEST_F(VariableTest, VariableTypeIsTau) {
+    EXPECT_EQ(var_x->get_type().to_string(), "τ");
+    EXPECT_EQ(var_y->get_type().to_string(), "τ");
+}
+
+// Exception tests
+TEST_F(VariableTest, BetaReduce_ExceptionMessage) {
+    try {
+        var_x->beta_reduce();
+        FAIL() << "Expected ReductionOnNormalForm exception";
+    } catch (const ReductionOnNormalForm& e) {
+        std::string message = e.what();
+        EXPECT_TRUE(message.find("Reduction on normal form") != std::string::npos);
+        EXPECT_TRUE(message.find("x") != std::string::npos);
+    }
+}
+
+TEST_F(VariableTest, TypeCheck_UndeclaredVariable) {
+    TypingContext empty_context;
+    EXPECT_THROW(var_x->type_check(empty_context), UndeclaredVariableError);
+    
+    try {
+        var_y->type_check(empty_context);
+        FAIL() << "Expected UndeclaredVariableError";
+    } catch (const UndeclaredVariableError& e) {
+        std::string message = e.what();
+        EXPECT_TRUE(message.find("Undeclared variable") != std::string::npos);
+        EXPECT_TRUE(message.find("y") != std::string::npos);
+    }
+}
+
+// Test with different types
+TEST_F(VariableTest, Variable_WithCustomTypes) {
+    Variable int_var("num", std::make_unique<BaseType>("Int"));
+    Variable bool_var("flag", std::make_unique<BaseType>("Bool"));
+    Variable string_var("text", std::make_unique<BaseType>("String"));
+    
+    EXPECT_EQ(int_var.get_type().to_string(), "Int");
+    EXPECT_EQ(bool_var.get_type().to_string(), "Bool");
+    EXPECT_EQ(string_var.get_type().to_string(), "String");
+}
+
+TEST_F(VariableTest, Variable_WithFunctionType) {
+    auto func_type = std::make_unique<FunctionType>(
+        std::make_unique<BaseType>("Int"),
+        std::make_unique<BaseType>("Bool")
+    );
+    Variable func_var("f", std::move(func_type));
+    
+    EXPECT_EQ(func_var.get_type().to_string(), "Int -> Bool");
+}
+
+TEST_F(VariableTest, Substitute_PreservesCustomType) {
+    Variable int_var("x", std::make_unique<BaseType>("Int"));
+    Variable replacement("y", std::make_unique<BaseType>("String"));
+    
+    auto result = int_var.substitute("x", replacement);
+    Variable* result_var = dynamic_cast<Variable*>(result.get());
+    
+    ASSERT_NE(result_var, nullptr);
+    EXPECT_EQ(result_var->name, "y");
+    EXPECT_EQ(result_var->get_type().to_string(), "String");
 }

@@ -27,6 +27,11 @@ public:
         body(std::move(body))
     {};
 
+    explicit Abstraction(
+        std::unique_ptr<Variable> variable,
+        std::unique_ptr<Term> body
+    );
+
     ~Abstraction() override;;
 
     [[nodiscard]] std::unique_ptr<Term> alpha_convert(std::string newValue) const override;;

@@ -8,21 +8,19 @@
 #include <memory>
 #include <string>
 
-#include "terms/Variable.h"
-
 
 class Type {
 public:
 	virtual ~Type() = 0;
 	[[nodiscard]] virtual std::string to_string() const = 0;
 	[[nodiscard]] virtual std::unique_ptr<Type> clone() const = 0;
-	// [[nodiscard]] virtual std::unique_ptr<Type> downcast() const = 0;
 };
 
-class BaseType : public Type {
+class BaseType final : public Type {
 public:
 	std::string name;
 
+	~BaseType() override;
 	explicit BaseType(std::string name):
 		name(std::move(name))
 	{};
@@ -31,15 +29,17 @@ public:
 	[[nodiscard]] std::unique_ptr<Type> clone() const override;
 };
 
-class FunctionType : public Type {
+class FunctionType final : public Type {
 public:
 	std::unique_ptr<Type> domain;
 	std::unique_ptr<Type> codomain;
 
+	~FunctionType() override;
 	explicit FunctionType(std::unique_ptr<Type> domain, std::unique_ptr<Type> codomain):
 		domain(std::move(domain)),
 		codomain(std::move(codomain))
 	{}
+	FunctionType(const FunctionType& other);
 
 	[[nodiscard]] std::string to_string() const override;
 	[[nodiscard]] std::unique_ptr<Type> clone() const override;

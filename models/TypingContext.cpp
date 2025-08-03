@@ -8,8 +8,7 @@ TypingContext::TypingContext() = default;
 TypingContext::~TypingContext() = default;
 
 const Type* TypingContext::lookup(const std::string& name) const {
-	auto it = context.find(name);
-	if (it != context.end()) {
+	if (const auto it = context.find(name); it != context.end()) {
 		return it->second;
 	}
 	return nullptr;

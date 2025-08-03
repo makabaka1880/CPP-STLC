@@ -10,15 +10,21 @@
 
 using std::unique_ptr; using std::make_unique;
 
+Abstraction::Abstraction(std::unique_ptr<Variable> variable, std::unique_ptr<Term> body):
+    var_type(variable->get_type().clone()),
+    var_name(variable->name),
+    body(std::move(body))
+{};
+
 Abstraction::~Abstraction() = default;
 
 unique_ptr<Term> Abstraction::alpha_convert(const std::string newValue) const {
-    auto new_variable = make_unique<Variable>(newValue);
+    auto new_variable = make_unique<Variable>(newValue, this->var_type->clone());
     auto new_body = this->body->substitute(this->var_name, *new_variable);
     return make_unique<Abstraction>(
         this->var_type->clone(),
         newValue,
-        new_body
+        std::move(new_body)
     );
 }
 
@@ -30,7 +36,7 @@ unique_ptr<Term> Abstraction::substitute(std::string target, Term& newValue) con
 
     // Free var capturing
     if (newValue.has_free(this->var_name)) {
-        auto new_var = make_unique<Variable>(this->var_name+"'", this->var_type);
+        auto new_var = make_unique<Variable>(this->var_name+"'", this->var_type->clone());
         return new_var->substitute(target, newValue);
     }
 
@@ -59,7 +65,7 @@ std::unique_ptr<Type> Abstraction::type_check(const TypingContext& context) cons
     auto extended_ctx = context;
     extended_ctx.add(this->var_name, this->var_type.get());
     auto func_body_type = this->body->type_check(extended_ctx);
-    return make_unique<FunctionType>(this->var_type, func_body_type);
+    return make_unique<FunctionType>(this->var_type->clone(), std::move(func_body_type));
 }
 
 bool Abstraction::is_normal() const {
