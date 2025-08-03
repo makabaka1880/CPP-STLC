@@ -61,5 +61,5 @@ bool Application::has_free(std::string target) const {
 }
 
 std::string Application::to_string() const {
-	return this->function->to_string() + " (" + this->value->to_string() + ")";
+	return "(" + this->function->to_string() + ") (" + this->value->to_string() + ")";
 }

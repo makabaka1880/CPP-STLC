@@ -25,6 +25,7 @@ add_library(lambda_lib
         exceptions/Exceptions.cpp
         models/Type.cpp
         models/Type.h
+        models/lambda.h
 )
 
 target_include_directories(lambda_lib PUBLIC
