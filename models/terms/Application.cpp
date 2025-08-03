@@ -50,18 +50,26 @@ unique_ptr<Term> Application::beta_reduce() const {
 }
 
 std::unique_ptr<Type> Application::type_check(const TypingContext &context) const {
-	// Check if parameters match in typing
-	auto param_type = this->value->type_check(context);
+	auto func_type_result = this->function->type_check(context);
 
-	if (const auto func_is_base_type =
-			dynamic_cast<const BaseType*>
-				(this->function->type_check(context).get())
-		) throw NotAFunctionError(func_is_base_type->name);
-	const auto func_is_func_type = dynamic_cast<const FunctionType*>
-			(this->function->type_check(context).get());
-	if (func_is_func_type->domain->to_string() != this->value->to_string())
-		throw DomainTypeMismatchError(this->value->to_string(), func_is_func_type->domain->to_string());
-	return func_is_func_type->codomain->clone();
+	if (func_type_result == nullptr) {
+		throw NotAFunctionError("The function has no type");
+	}
+
+	if (const auto func_is_base_type = dynamic_cast<const BaseType*>(func_type_result.get())) {
+		throw NotAFunctionError(func_is_base_type->name);
+	} else if (const auto func_is_func_type = dynamic_cast<const FunctionType*>(func_type_result.get())) {
+		auto value_type = this->value->type_check(context);
+
+		if (value_type == nullptr) {
+		} else if (value_type->to_string() != func_is_func_type->domain->to_string()) {
+			throw DomainTypeMismatchError(value_type->to_string(), func_is_func_type->domain->to_string());
+		}
+
+		return func_is_func_type->codomain->clone();
+	} else {
+		throw NotAFunctionError(func_type_result->to_string());
+	}
 }
 
 

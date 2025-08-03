@@ -250,14 +250,17 @@ TEST_F(AbstractionTest, BetaReduce_NormalForm_ExceptionMessage) {
 
 TEST_F(AbstractionTest, TypeCheck_WithTypingContext) {
     TypingContext ctx;
-    ctx.add("y", std::make_unique<BaseType>("Int").get());
-    
-    // λx:τ. y where y:Int should give τ -> Int
+    auto type_int = std::make_unique<BaseType>("Int");
+    ctx.add("y", type_int.get());
+
+    // Create the Abstraction: λx:τ. y where y:Int should give τ -> Int
     auto abs = std::make_unique<Abstraction>(
-        std::make_unique<Variable>("x"),  // x:τ
-        std::make_unique<Variable>("y")   // y should be looked up in context
+        // Use your robust constructor with a BaseType("τ") for the bound variable x
+        std::make_unique<BaseType>("τ"),
+        "x",
+        std::make_unique<Variable>("y")
     );
-    
+
     auto func_type = abs->type_check(ctx);
     EXPECT_EQ(func_type->to_string(), "τ -> Int");
 }
@@ -276,32 +279,40 @@ TEST_F(AbstractionTest, TypeCheck_UndeclaredVariableInBody) {
 
 // Test complex type scenarios
 TEST_F(AbstractionTest, Abstraction_NestedFunctionTypes) {
-    // Create λf:(Int->Bool). λx:Int. f(x)
-    auto inner_app = std::make_unique<Application>(
-        std::make_unique<Variable>("f"),  // f:(Int->Bool)
-        std::make_unique<Variable>("x")   // x:Int
+    // Create the types we'll need and store them in unique_ptrs
+    auto int_type = std::make_unique<BaseType>("Int");
+    auto bool_type = std::make_unique<BaseType>("Bool");
+    auto func_type = std::make_unique<FunctionType>(
+        int_type->clone(), // Clone since it will be moved
+        bool_type->clone() // Clone since it will be moved
     );
-    
+
+    // Create the variables and their types, storing them in unique_ptrs
+    auto x_var = std::make_unique<Variable>("x", std::move(int_type));
+    auto f_var = std::make_unique<Variable>("f", std::move(func_type));
+
+    // Create the inner body: f(x)
+    auto inner_app = std::make_unique<Application>(
+        std::make_unique<Variable>("f"),
+        std::make_unique<Variable>("x")
+    );
+
+    // Create the inner abstraction: λx:Int. f(x)
     auto inner_abs = std::make_unique<Abstraction>(
-        std::make_unique<Variable>("x", std::make_unique<BaseType>("Int")),
+        std::move(x_var),
         std::move(inner_app)
     );
-    
+
+    // Create the outer abstraction: λf:(Int->Bool). inner_abs
     auto outer_abs = std::make_unique<Abstraction>(
-        std::make_unique<Variable>("f", 
-            std::make_unique<FunctionType>(
-                std::make_unique<BaseType>("Int"),
-                std::make_unique<BaseType>("Bool")
-            )
-        ),
+        std::move(f_var),
         std::move(inner_abs)
     );
-    
-    TypingContext ctx;
-    auto func_type = outer_abs->type_check(ctx);
-    EXPECT_EQ(func_type->to_string(), "(Int -> Bool) -> (Int -> Bool)");
-}
 
+    TypingContext ctx;
+    auto func_type_ = outer_abs->type_check(ctx);
+    EXPECT_EQ(func_type_->to_string(), "(Int -> Bool) -> (Int -> Bool)");
+}
 TEST_F(AbstractionTest, Clone_PreservesTypes) {
     auto int_abs = std::make_unique<Abstraction>(
         std::make_unique<Variable>("x", std::make_unique<BaseType>("Int")),
