@@ -60,3 +60,7 @@ bool Abstraction::has_free(std::string target) const {
     if (this->variable->name == target) return false;
     return this->body->has_free(target);
 }
+
+std::string Abstraction::to_string() const {
+    return "λ" + this->variable->name + ". " + this->body->to_string();
+}

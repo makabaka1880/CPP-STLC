@@ -59,3 +59,7 @@ bool Application::is_normal() const {
 bool Application::has_free(std::string target) const {
 	return this->function->has_free(target) || this->value->has_free(target);
 }
+
+std::string Application::to_string() const {
+	return this->function->to_string() + " (" + this->value->to_string() + ")";
+}

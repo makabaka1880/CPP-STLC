@@ -21,6 +21,7 @@ public:
     [[nodiscard]] std::unique_ptr<Term> clone() const override;
     [[nodiscard]] bool is_normal() const override;
     [[nodiscard]] bool has_free(std::string target) const override;
+    [[nodiscard]] virtual std::string to_string() const = 0;
 };
 
 #endif //VARIABLE_H

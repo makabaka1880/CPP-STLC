@@ -33,3 +33,7 @@ bool Variable::is_normal() const {
 bool Variable::has_free(std::string target) const {
     return this->name == target;
 }
+
+std::string Variable::to_string() const {
+    return name;
+}

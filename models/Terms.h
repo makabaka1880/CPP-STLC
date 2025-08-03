@@ -17,6 +17,7 @@ public:
     [[nodiscard]] virtual std::unique_ptr<Term> clone() const = 0;
     [[nodiscard]] virtual bool is_normal() const = 0;
     [[nodiscard]] virtual bool has_free(std::string target) const = 0;
+    [[nodiscard]] virtual std::string to_string() const = 0;
 };
 
 std::ostream& operator<<(std::ostream& os, const Term& term);

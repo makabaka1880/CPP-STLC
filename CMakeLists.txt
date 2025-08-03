@@ -23,6 +23,8 @@ add_library(lambda_lib
         models/terms/Application.cpp
         models/terms/Abstraction.cpp
         exceptions/Exceptions.cpp
+        models/Type.cpp
+        models/Type.h
 )
 
 target_include_directories(lambda_lib PUBLIC
