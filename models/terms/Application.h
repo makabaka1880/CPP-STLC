@@ -24,9 +24,10 @@ public:
 	[[nodiscard]] std::unique_ptr<Term> substitute(std::string target, Term& newValue) const override;
 	[[nodiscard]] std::unique_ptr<Term> clone() const override;
 	[[nodiscard]] std::unique_ptr<Term> beta_reduce() const override;
+	[[nodiscard]] std::unique_ptr<Type> type_check(const TypingContext& context) const override;
 	[[nodiscard]] bool is_normal() const override;
     [[nodiscard]] bool has_free(std::string target) const override;
-	[[nodiscard]] virtual std::string to_string() const override;
+	[[nodiscard]] std::string to_string() const override;
 };
 
 

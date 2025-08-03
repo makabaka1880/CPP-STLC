@@ -164,3 +164,100 @@ TEST_F(ApplicationTest, BetaReduce_ReduceFunction) {
     EXPECT_EQ(func->name, "f");
     EXPECT_EQ(val->name, "y");
 }
+
+// Test applications with different types
+TEST_F(ApplicationTest, Application_WithTypedVariables) {
+    auto typed_app = std::make_unique<Application>(
+        std::make_unique<Variable>("f", std::make_unique<FunctionType>(
+            std::make_unique<BaseType>("Int"),
+            std::make_unique<BaseType>("Bool")
+        )),
+        std::make_unique<Variable>("x", std::make_unique<BaseType>("Int"))
+    );
+    
+    Variable* func = dynamic_cast<Variable*>(typed_app->function.get());
+    Variable* val = dynamic_cast<Variable*>(typed_app->value.get());
+    
+    ASSERT_NE(func, nullptr);
+    ASSERT_NE(val, nullptr);
+    EXPECT_EQ(func->get_type().to_string(), "Int -> Bool");
+    EXPECT_EQ(val->get_type().to_string(), "Int");
+}
+
+// Exception tests
+TEST_F(ApplicationTest, BetaReduce_NormalForm_ExceptionMessage) {
+    try {
+        simple_app->beta_reduce();
+        FAIL() << "Expected ReductionOnNormalForm exception";
+    } catch (const ReductionOnNormalForm& e) {
+        std::string message = e.what();
+        EXPECT_TRUE(message.find("Reduction on normal form") != std::string::npos);
+    }
+}
+
+// Test complex application scenarios
+TEST_F(ApplicationTest, Application_NestedApplications) {
+    // ((f g) h) - left-associative application
+    auto inner_app = std::make_unique<Application>(
+        std::make_unique<Variable>("f"),
+        std::make_unique<Variable>("g")
+    );
+    
+    auto outer_app = std::make_unique<Application>(
+        std::move(inner_app),
+        std::make_unique<Variable>("h")
+    );
+    
+    // Check structure
+    Application* inner = dynamic_cast<Application*>(outer_app->function.get());
+    Variable* h = dynamic_cast<Variable*>(outer_app->value.get());
+    
+    ASSERT_NE(inner, nullptr);
+    ASSERT_NE(h, nullptr);
+    EXPECT_EQ(h->name, "h");
+    
+    Variable* f = dynamic_cast<Variable*>(inner->function.get());
+    Variable* g = dynamic_cast<Variable*>(inner->value.get());
+    
+    ASSERT_NE(f, nullptr);
+    ASSERT_NE(g, nullptr);
+    EXPECT_EQ(f->name, "f");
+    EXPECT_EQ(g->name, "g");
+}
+
+TEST_F(ApplicationTest, Application_TypeChecking) {
+    TypingContext ctx;
+    ctx.add("f", std::make_unique<FunctionType>(
+        std::make_unique<BaseType>("Int"),
+        std::make_unique<BaseType>("Bool")
+    ).get());
+    ctx.add("x", std::make_unique<BaseType>("Int").get());
+    
+    auto app = std::make_unique<Application>(
+        std::make_unique<Variable>("f"),
+        std::make_unique<Variable>("x")
+    );
+    
+    auto result_type = app->type_check(ctx);
+    EXPECT_EQ(result_type->to_string(), "Bool");
+}
+
+TEST_F(ApplicationTest, Clone_PreservesTypes) {
+    auto typed_app = std::make_unique<Application>(
+        std::make_unique<Variable>("f", std::make_unique<BaseType>("String")),
+        std::make_unique<Variable>("x", std::make_unique<BaseType>("Int"))
+    );
+    
+    auto cloned = typed_app->clone();
+    Application* cloned_app = dynamic_cast<Application*>(cloned.get());
+    
+    ASSERT_NE(cloned_app, nullptr);
+    
+    Variable* func = dynamic_cast<Variable*>(cloned_app->function.get());
+    Variable* val = dynamic_cast<Variable*>(cloned_app->value.get());
+    
+    ASSERT_NE(func, nullptr);
+    ASSERT_NE(val, nullptr);
+    EXPECT_EQ(func->get_type().to_string(), "String");
+    EXPECT_EQ(val->get_type().to_string(), "Int");
+}

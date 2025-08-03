@@ -5,9 +5,13 @@
 #ifndef TERM_H
 #define TERM_H
 
+#include "Type.h"
+
 #include <string>
 #include <memory>
 #include <iostream>
+
+#include "TypingContext.h"
 
 class Term {
 public:
@@ -16,6 +20,7 @@ public:
     [[nodiscard]] virtual std::unique_ptr<Term> substitute(std::string target, Term& newValue) const = 0;
     [[nodiscard]] virtual std::unique_ptr<Term> beta_reduce() const = 0;
     [[nodiscard]] virtual std::unique_ptr<Term> clone() const = 0;
+    [[nodiscard]] virtual std::unique_ptr<Type> type_check(const TypingContext& context) const = 0;
     [[nodiscard]] virtual bool is_normal() const = 0;
     [[nodiscard]] virtual bool has_free(std::string target) const = 0;
     [[nodiscard]] virtual std::string to_string() const = 0;

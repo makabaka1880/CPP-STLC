@@ -33,10 +33,10 @@ unique_ptr<Term> Application::substitute(std::string target, Term& newValue) con
 	);
 }
 
-std::unique_ptr<Term> Application::beta_reduce() const {
+unique_ptr<Term> Application::beta_reduce() const {
 	if (const auto* func_term = dynamic_cast<const Abstraction*>(this->function.get())) {
 		return func_term->body->substitute(
-			func_term->variable->name,
+			func_term->var_name,
 			*this->value
 		);
 	};
@@ -46,8 +46,24 @@ std::unique_ptr<Term> Application::beta_reduce() const {
 	if (!this->value->is_normal()) {
 		return make_unique<Application>(this->function->clone(), this->value->beta_reduce());
 	}
-	throw ReductionOnNormalForm();
+	throw ReductionOnNormalForm(this->value);
 }
+
+std::unique_ptr<Type> Application::type_check(const TypingContext &context) const {
+	// Check if parameters match in typing
+	auto param_type = this->value->type_check(context);
+
+	if (const auto func_is_base_type =
+			dynamic_cast<const BaseType*>
+				(this->function->type_check(context).get())
+		) throw NotAFunctionError(func_is_base_type->name);
+	const auto func_is_func_type = dynamic_cast<const FunctionType*>
+			(this->function->type_check(context).get());
+	if (func_is_func_type->domain->to_string() != this->value->to_string())
+		throw DomainTypeMismatchError(this->value->to_string(), func_is_func_type->domain->to_string());
+	return func_is_func_type->codomain->clone();
+}
+
 
 bool Application::is_normal() const {
 	if (const auto* func_term = dynamic_cast<const Abstraction*>(this->function.get())) return false;

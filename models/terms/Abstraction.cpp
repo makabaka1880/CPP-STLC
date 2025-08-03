@@ -10,46 +10,62 @@
 
 using std::unique_ptr; using std::make_unique;
 
-Abstraction::Abstraction(unique_ptr<Variable> variable, unique_ptr<Term> body):
-    variable(std::move(variable)),
+Abstraction::Abstraction(std::unique_ptr<Variable> variable, std::unique_ptr<Term> body):
+    var_type(variable->get_type().clone()),
+    var_name(variable->name),
     body(std::move(body))
-{}
+{};
 
 Abstraction::~Abstraction() = default;
 
 unique_ptr<Term> Abstraction::alpha_convert(const std::string newValue) const {
-    auto new_variable = make_unique<Variable>(newValue);
-    auto new_body = this->body->substitute(this->variable->name, *new_variable);
+    auto new_variable = make_unique<Variable>(newValue, this->var_type->clone());
+    auto new_body = this->body->substitute(this->var_name, *new_variable);
     return make_unique<Abstraction>(
-        std::move(new_variable),
+        this->var_type->clone(),
+        newValue,
         std::move(new_body)
     );
 }
 
 unique_ptr<Term> Abstraction::substitute(std::string target, Term& newValue) const {
-    if (this->variable->name == target) {
+    // Target var is same as binding var, stop
+    if (this->var_name == target) {
         return this->clone();
     }
-    auto this_var = make_unique<Variable>(this->variable->name);
+
+    // Free var capturing
+    if (newValue.has_free(this->var_name)) {
+        auto new_var = make_unique<Variable>(this->var_name+"'", this->var_type->clone());
+        return new_var->substitute(target, newValue);
+    }
+
+    // Everything's nice
     return make_unique<Abstraction>(
-        std::move(this_var),
+        this->var_type->clone(),
+        this->var_name,
         this->body->substitute(target, newValue)
     );
 }
 
 unique_ptr<Term> Abstraction::clone() const {
-    auto cloned_variable_term = this->variable->clone();
-    auto cloned_variable = static_unique_ptr_cast<Variable>(std::move(cloned_variable_term));
-    auto cloned_body = this->body->clone();
-    return std::make_unique<Abstraction>(std::move(cloned_variable), std::move(cloned_body));
+    return std::make_unique<Abstraction>(this->var_type->clone(), this->var_name, this->body->clone());
 }
 
 unique_ptr<Term> Abstraction::beta_reduce() const {
-    if (this->is_normal()) throw ReductionOnNormalForm();
+    if (this->is_normal()) throw ReductionOnNormalForm(this->clone());
     return make_unique<Abstraction>(
-        static_unique_ptr_cast<Variable>(this->variable->clone()),
+        this->var_type->clone(),
+        this->var_name,
         this->body->beta_reduce()
     );
+}
+
+std::unique_ptr<Type> Abstraction::type_check(const TypingContext& context) const {
+    auto extended_ctx = context;
+    extended_ctx.add(this->var_name, this->var_type.get());
+    auto func_body_type = this->body->type_check(extended_ctx);
+    return make_unique<FunctionType>(this->var_type->clone(), std::move(func_body_type));
 }
 
 bool Abstraction::is_normal() const {
@@ -57,10 +73,10 @@ bool Abstraction::is_normal() const {
 }
 
 bool Abstraction::has_free(std::string target) const {
-    if (this->variable->name == target) return false;
+    if (this->var_name == target) return false;
     return this->body->has_free(target);
 }
 
 std::string Abstraction::to_string() const {
-    return "λ" + this->variable->name + ". " + this->body->to_string();
+    return "λ" + this->var_name + ". " + this->body->to_string();
 }

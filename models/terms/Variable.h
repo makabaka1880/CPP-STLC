@@ -6,12 +6,18 @@
 #define VARIABLE_H
 
 #include "../Terms.h"
+#include "../TypingContext.h"
+#include "../Type.h"
 
 
 class Variable final : public Term {
+protected:
+    std::unique_ptr<Type> type_buffer;
+
 public:
     std::string name;
 
+    explicit Variable(std::string name, std::unique_ptr<Type> type_buffer);
     explicit Variable(std::string name);
     ~Variable() override;
 
@@ -19,9 +25,11 @@ public:
     [[nodiscard]] std::unique_ptr<Term> alpha_convert(std::string newValue) const override;;
     [[nodiscard]] std::unique_ptr<Term> beta_reduce() const override;
     [[nodiscard]] std::unique_ptr<Term> clone() const override;
+    [[nodiscard]] std::unique_ptr<Type> type_check(const TypingContext& context) const override;
+    [[nodiscard]] const Type& get_type() const;
+    [[nodiscard]] std::string to_string() const override;
     [[nodiscard]] bool is_normal() const override;
     [[nodiscard]] bool has_free(std::string target) const override;
-    [[nodiscard]] virtual std::string to_string() const override;
 };
 
 #endif //VARIABLE_H
