@@ -27,7 +27,7 @@ public:
 	[[nodiscard]] std::unique_ptr<Type> type_check(const TypingContext& context) const override;
 	[[nodiscard]] bool is_normal() const override;
     [[nodiscard]] bool has_free(std::string target) const override;
-	[[nodiscard]] virtual std::string to_string() const override;
+	[[nodiscard]] std::string to_string() const override;
 };
 
 
