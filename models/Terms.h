@@ -7,6 +7,7 @@
 
 #include <string>
 #include <memory>
+#include <iostream>
 
 class Term {
 public:
@@ -21,4 +22,5 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& os, const Term& term);
+std::istream& operator>>(std::istream& is, std::unique_ptr<Term>& term);
 #endif //TERM_H
