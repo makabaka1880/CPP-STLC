@@ -33,7 +33,7 @@ unique_ptr<Term> Application::substitute(std::string target, Term& newValue) con
 	);
 }
 
-std::unique_ptr<Term> Application::beta_reduce() const {
+unique_ptr<Term> Application::beta_reduce() const {
 	if (const auto* func_term = dynamic_cast<const Abstraction*>(this->function.get())) {
 		return func_term->body->substitute(
 			func_term->variable->name,
@@ -48,6 +48,16 @@ std::unique_ptr<Term> Application::beta_reduce() const {
 	}
 	throw ReductionOnNormalForm();
 }
+
+std::unique_ptr<Type> Application::type_check(const TypingContext &context) const {
+	// Check if parameters match in typing
+	auto param_type = this->value->type_check(context);
+
+	if (auto func_is_base_type = dynamic_cast<const BaseType>(this->function->type_check(context))) {
+		throw TypeMismatchError(, func_is_base_type);
+	};
+}
+
 
 bool Application::is_normal() const {
 	if (const auto* func_term = dynamic_cast<const Abstraction*>(this->function.get())) return false;

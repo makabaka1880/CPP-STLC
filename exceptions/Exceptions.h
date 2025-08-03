@@ -9,7 +9,7 @@
 #include <string>
 #include <sstream>
 
-class ReductionOnNormalForm: public std::runtime_error {
+class ReductionOnNormalForm final : public std::runtime_error {
 private:
     std::string fullMessage;
 public:
@@ -24,7 +24,7 @@ public:
     [[nodiscard]] const char* what() const noexcept override;
 };
 
-class UndeclaredVariableError : public std::runtime_error {
+class UndeclaredVariableError final : public std::runtime_error {
 private:
     std::string fullMessage;
 public:
@@ -39,18 +39,22 @@ public:
     [[nodiscard]] const char* what() const noexcept override;
 };
 
-class TypeMismatchError: public std::runtime_error {
-private:
-    std::string fullMessage;
+class TypeMismatchError : public std::runtime_error {
 public:
-    explicit TypeMismatchError(const std::unique_ptr<Term> &expecting, const std::unique_ptr<Term> &actual):
-        std::runtime_error("")
-    {
-        std::stringstream ss;
-        ss << "Type mismatch: expecting " << expecting->to_string() << ", got " << actual->to_string();
-        fullMessage = ss.str();
-    }
-
-    [[nodiscard]] const char* what() const noexcept override;
+    explicit TypeMismatchError(const std::string& message)
+        : std::runtime_error(message) {}
 };
+
+class NotAFunctionError final : public TypeMismatchError {
+public:
+    explicit NotAFunctionError(const std::string& typeName)
+        : TypeMismatchError("Type error: '" + typeName + "' is not a function.") {}
+};
+
+class DomainTypeMismatchError final : public TypeMismatchError {
+public:
+    explicit DomainTypeMismatchError(const std::string& expected, const std::string& actual)
+        : TypeMismatchError("Type mismatch: expecting domain '" + expected + "', got '" + actual + "'") {}
+};
+
 #endif //EXCEPTIONS_H
