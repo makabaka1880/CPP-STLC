@@ -12,22 +12,31 @@
 class Type {
 public:
 	virtual ~Type() = 0;
+	[[nodiscard]] virtual std::string to_string() const = 0;
 };
 
 class BaseType : public Type {
 public:
 	std::string name;
-	explicit BaseType(std::string name) : name(std::move(name)) {}
+
+	explicit BaseType(std::string name):
+		name(std::move(name))
+	{};
+
+	[[nodiscard]] virtual std::string to_string() const override;
 };
 
 class FunctionType : public Type {
 public:
 	std::unique_ptr<Type> domain;
 	std::unique_ptr<Type> codomain;
+
 	explicit FunctionType(std::unique_ptr<Type> domain, std::unique_ptr<Type> codomain):
 		domain(std::move(domain)),
 		codomain(std::move(codomain))
 	{}
+
+	[[nodiscard]] virtual std::string to_string() const override;
 };
 
 #endif //TYPE_H
