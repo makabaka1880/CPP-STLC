@@ -1,5 +1,5 @@
 #include <iostream>
-#include "lambda.h"
+#include "models/lambda.h"
 
 int main() {
     std::cout << "Hello, World!" << std::endl;
