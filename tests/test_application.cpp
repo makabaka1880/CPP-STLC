@@ -227,11 +227,17 @@ TEST_F(ApplicationTest, Application_NestedApplications) {
 
 TEST_F(ApplicationTest, Application_TypeChecking) {
     TypingContext ctx;
-    ctx.add("f", std::make_unique<FunctionType>(
+
+    // Keep the unique_ptr objects in scope so they aren't deleted
+    auto f_type = std::make_unique<FunctionType>(
         std::make_unique<BaseType>("Int"),
         std::make_unique<BaseType>("Bool")
-    ).get());
-    ctx.add("x", std::make_unique<BaseType>("Int").get());
+    );
+    auto x_type = std::make_unique<BaseType>("Int");
+
+    // Add the raw pointers to the context
+    ctx.add("f", f_type.get());
+    ctx.add("x", x_type.get());
     
     auto app = std::make_unique<Application>(
         std::make_unique<Variable>("f"),
