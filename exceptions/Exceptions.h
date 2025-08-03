@@ -1,4 +1,6 @@
+
 //
+// Exceptions.h
 // Created by SeanLi on 8/3/25.
 //
 
@@ -43,6 +45,8 @@ class TypeMismatchError : public std::runtime_error {
 public:
     explicit TypeMismatchError(const std::string& message)
         : std::runtime_error(message) {}
+    
+    // No need to override what() - std::runtime_error handles it correctly
 };
 
 class NotAFunctionError final : public TypeMismatchError {
