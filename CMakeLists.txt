@@ -26,6 +26,8 @@ add_library(lambda_lib
         models/Type.cpp
         models/Type.h
         models/lambda.h
+        models/TypingContext.cpp
+        models/TypingContext.h
 )
 
 target_include_directories(lambda_lib PUBLIC
@@ -35,7 +37,9 @@ target_include_directories(lambda_lib PUBLIC
 )
 
 # Main executable
-add_executable(lambda main.cpp)
+add_executable(lambda main.cpp
+        models/TypingContext.cpp
+        models/TypingContext.h)
 target_link_libraries(lambda lambda_lib)
 
 # Test executable
