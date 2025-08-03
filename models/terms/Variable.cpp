@@ -26,6 +26,10 @@ std::unique_ptr<Term> Variable::clone() const {
     return std::make_unique<Variable>(name);
 }
 
+Type& Variable::type() const {
+    return *this->type_buffer;
+}
+
 bool Variable::is_normal() const {
     return true;
 }

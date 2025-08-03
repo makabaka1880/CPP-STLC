@@ -10,7 +10,8 @@
 
 class Variable final : public Term {
 protected:
-    std::unique_ptr<Type> type;
+    std::unique_ptr<Type> type_buffer;
+
 public:
     std::string name;
 
@@ -22,6 +23,7 @@ public:
     [[nodiscard]] std::unique_ptr<Term> beta_reduce() const override;
     [[nodiscard]] std::unique_ptr<Term> clone() const override;
     [[nodiscard]] std::string to_string() const override;
+    [[nodiscard]] Type& type() const override;
     [[nodiscard]] bool is_normal() const override;
     [[nodiscard]] bool has_free(std::string target) const override;
 };
