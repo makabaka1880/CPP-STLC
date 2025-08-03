@@ -36,7 +36,7 @@ unique_ptr<Term> Application::substitute(std::string target, Term& newValue) con
 unique_ptr<Term> Application::beta_reduce() const {
 	if (const auto* func_term = dynamic_cast<const Abstraction*>(this->function.get())) {
 		return func_term->body->substitute(
-			func_term->variable->name,
+			func_term->var_name,
 			*this->value
 		);
 	};

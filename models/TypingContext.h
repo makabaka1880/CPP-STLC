@@ -15,6 +15,7 @@ public:
 	TypingContext();
 	~TypingContext();
 	[[nodiscard]] const Type* lookup(const std::string& name) const;
+	void add(const std::string& name, const Type* type);
 };
 
 #endif //TYPINGCONTEXT_H

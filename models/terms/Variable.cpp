@@ -5,8 +5,9 @@
 
 
 using std::unique_ptr; using std::make_unique;
-Variable::Variable(std::string name): name(std::move(name)) {
-}
+Variable::Variable(std::string name):
+    name(std::move(name))
+{};
 
 Variable::~Variable() = default;
 
@@ -30,6 +31,10 @@ unique_ptr<Type> Variable::type_check(const TypingContext& context) const {
     auto type = context.lookup(this->name);
     if (type == nullptr) { throw UndeclaredVariableError(this->name); }
     return type->clone();
+}
+
+unique_ptr<Type> Variable::get_type() const {
+    return type_buffer->clone();
 }
 
 bool Variable::is_normal() const {

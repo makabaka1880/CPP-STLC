@@ -14,3 +14,7 @@ const Type* TypingContext::lookup(const std::string& name) const {
 	}
 	return nullptr;
 }
+
+void TypingContext::add(const std::string& name, const Type* type) {
+	this->context[name] = type;
+}

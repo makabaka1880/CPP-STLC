@@ -13,10 +13,20 @@
 
 class Abstraction final : public Term {
 public:
-    std::unique_ptr<Variable> variable;
+    std::unique_ptr<Type> var_type;
+    std::string var_name;
     std::unique_ptr<Term> body;
 
-    explicit Abstraction(std::unique_ptr<Variable> variable, std::unique_ptr<Term> body);
+    explicit Abstraction(
+        std::unique_ptr<Type> var_type,
+        std::string var_name,
+        std::unique_ptr<Term> body
+    ):
+        var_type(std::move(var_type)),
+        var_name(std::move(var_name)),
+        body(std::move(body))
+    {};
+
     ~Abstraction() override;;
 
     [[nodiscard]] std::unique_ptr<Term> alpha_convert(std::string newValue) const override;;
