@@ -12,3 +12,7 @@ const char* ReductionOnNormalForm::what() const noexcept {
 const char* UndeclaredVariableError::what() const noexcept {
 	return fullMessage.c_str();
 }
+
+const char* TypeMismatchError::what() const noexcept {
+	return fullMessage.c_str();
+}

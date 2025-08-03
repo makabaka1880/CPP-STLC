@@ -17,7 +17,7 @@ public:
         std::runtime_error("")
     {
         std::stringstream ss;
-        ss << "Reduction on normal form " << term->to_string();
+        ss << "Reduction on normal form: " << term->to_string();
         fullMessage = ss.str();
     }
 
@@ -33,6 +33,21 @@ public:
     {
         std::stringstream ss;
         ss << "Undeclared variable: '" << name << "'";
+        fullMessage = ss.str();
+    }
+
+    [[nodiscard]] const char* what() const noexcept override;
+};
+
+class TypeMismatchError: public std::runtime_error {
+private:
+    std::string fullMessage;
+public:
+    explicit TypeMismatchError(const std::unique_ptr<Term> &expecting, const std::unique_ptr<Term> &actual):
+        std::runtime_error("")
+    {
+        std::stringstream ss;
+        ss << "Type mismatch: expecting " << expecting->to_string() << ", got " << actual->to_string();
         fullMessage = ss.str();
     }
 
