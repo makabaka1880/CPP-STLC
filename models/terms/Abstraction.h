@@ -6,7 +6,7 @@
 #define ABSTRACTION_H
 
 #include "Variable.h"
-#include "Terms.h"
+#include "../Terms.h"
 
 #include <string>
 #include <memory>

@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../terms/Variable.h"
+#include "../models/terms/Variable.h"
 #include "../exceptions/Exceptions.h"
 
 class VariableTest : public ::testing::Test {

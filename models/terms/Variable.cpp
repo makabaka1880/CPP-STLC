@@ -1,7 +1,7 @@
 #include "Variable.h"
 
-#include "../exceptions/Exceptions.h"
-#include "Terms.h"
+#include "../../exceptions/Exceptions.h"
+#include "../Terms.h"
 
 
 using std::unique_ptr; using std::make_unique;

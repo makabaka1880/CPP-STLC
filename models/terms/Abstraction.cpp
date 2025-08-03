@@ -4,9 +4,9 @@
 
 #include "Abstraction.h"
 
-#include "Terms.h"
-#include "../utils.h"
-#include "../exceptions/Exceptions.h"
+#include "../Terms.h"
+#include "../../utils.h"
+#include "../../exceptions/Exceptions.h"
 
 using std::unique_ptr; using std::make_unique;
 

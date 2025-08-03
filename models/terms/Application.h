@@ -5,7 +5,7 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include "Terms.h"
+#include "../Terms.h"
 
 #include <memory>
 

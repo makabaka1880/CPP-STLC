@@ -6,7 +6,7 @@
 
 #include "Application.h"
 
-#include "../exceptions/Exceptions.h"
+#include "../../exceptions/Exceptions.h"
 
 using std::unique_ptr, std::make_unique;
 

@@ -5,7 +5,7 @@
 #ifndef VARIABLE_H
 #define VARIABLE_H
 
-#include "Terms.h"
+#include "../Terms.h"
 
 
 class Variable final : public Term {

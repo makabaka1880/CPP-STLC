@@ -18,16 +18,16 @@ enable_testing()
 
 # Create a library from your source files
 add_library(lambda_lib
-        terms/Terms.cpp
-        terms/Variable.cpp
-        terms/Application.cpp
-        terms/Abstraction.cpp
+        models/Terms.cpp
+        models/terms/Variable.cpp
+        models/terms/Application.cpp
+        models/terms/Abstraction.cpp
         exceptions/Exceptions.cpp
 )
 
 target_include_directories(lambda_lib PUBLIC
         .
-        terms
+        models
         exceptions
 )
 
